@@ -482,7 +482,7 @@ export default function ProjectDetailsDrawer({
               Add task
             </Button>
           )}
-          <TaskTable tasks={project.tasks} />
+          <TaskTable tasks={project.tasks} projectId={project.id} />
 
           {edit && (
             <Box

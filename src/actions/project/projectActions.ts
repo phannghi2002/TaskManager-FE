@@ -15,6 +15,9 @@ import {
   DELETE_PROJECT_FAILURE,
   DELETE_PROJECT_REQUEST,
   DELETE_PROJECT_SUCCESS,
+  DELETE_TASK_FAILURE,
+  DELETE_TASK_REQUEST,
+  DELETE_TASK_SUCCESS,
   GET_ALL_PROJECT_FAILURE,
   GET_ALL_PROJECT_REQUEST,
   GET_ALL_PROJECT_SUCCESS,
@@ -64,6 +67,11 @@ interface AddTask {
     startDate: Dayjs | null;
     endDate: Dayjs | null;
   };
+}
+
+interface DeleteTask {
+  projectId: string;
+  taskId: string;
 }
 
 export const getAllProject = () => async (dispatch: Dispatch) => {
@@ -229,6 +237,30 @@ export const addTask = (data: AddTask) => async (dispatch: Dispatch) => {
 
     dispatch({
       type: ADD_TASK_FAILURE,
+      payload: error.response.data.message,
+    });
+
+    return error.response.data;
+  }
+};
+
+export const deleteTask = (data: DeleteTask) => async (dispatch: Dispatch) => {
+  dispatch({ type: DELETE_TASK_REQUEST });
+  try {
+    const response = await api.delete(
+      `${API_BASE_URL}/project/${data.projectId}/task/${data.taskId}`
+    );
+
+    console.log("heheh", response);
+
+    dispatch({ type: DELETE_TASK_SUCCESS });
+
+    return response.data;
+  } catch (error: any) {
+    console.log("err", error, error.response.data.message);
+
+    dispatch({
+      type: DELETE_TASK_FAILURE,
       payload: error.response.data.message,
     });
 
