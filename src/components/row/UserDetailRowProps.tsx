@@ -18,6 +18,7 @@ const UserDetailRow = ({
   value,
   isComponent = false,
   edit = false, // Lấy prop edit
+
   isSelect = false,
   options = [],
   onChange,

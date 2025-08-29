@@ -10,20 +10,23 @@ import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../app/store";
 import { deleteUser, getAllUser } from "../../actions/user/userActions";
 import { toast } from "react-toastify";
+import {
+  deleteProject,
+  getAllProject,
+} from "../../actions/project/projectActions";
 
-interface DeleteDialogProps {
+interface DeleteProjectDialogProps {
   open: boolean;
-  onClose: () => void;
-  userId: string;
+  onClose: () => void; // Sử dụng kiểu hàm chính xác
+  projectId: string;
 }
 
-export default function DeleteDialog({
+export default function DeleteProjectDialog({
   open,
   onClose,
-  userId,
-}: DeleteDialogProps) {
+  projectId,
+}: DeleteProjectDialogProps) {
   const dispatch = useDispatch<AppDispatch>();
-  // console.log("vcl", userId);
 
   return (
     <>
@@ -50,7 +53,7 @@ export default function DeleteDialog({
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete this user? This action can not be
+            Are you sure you want to delete this project? This action can not be
             undone.
           </DialogContentText>
         </DialogContent>
@@ -86,15 +89,15 @@ export default function DeleteDialog({
             }}
             onClick={async () => {
               onClose();
-              console.log("in", userId);
+              console.log("in", projectId);
 
-              const result = await dispatch(deleteUser(userId));
+              const result = await dispatch(deleteProject(projectId));
               console.log("kkk", result);
 
               if (result.code !== 1000) {
                 toast.error(result.message);
               } else toast.success(result.message);
-              await dispatch(getAllUser());
+              await dispatch(getAllProject());
             }}
           >
             Delete

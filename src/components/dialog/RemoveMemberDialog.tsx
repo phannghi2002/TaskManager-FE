@@ -10,20 +10,25 @@ import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../app/store";
 import { deleteUser, getAllUser } from "../../actions/user/userActions";
 import { toast } from "react-toastify";
+import {
+  getAllProject,
+  removeMember,
+} from "../../actions/project/projectActions";
 
-interface DeleteDialogProps {
+interface RemoveMemberDialogProps {
   open: boolean;
-  onClose: () => void;
+  onClose: () => void; // Sử dụng kiểu hàm chính xác
   userId: string;
+  projectId: string;
 }
 
-export default function DeleteDialog({
+export default function RemoveMemberDialog({
   open,
   onClose,
   userId,
-}: DeleteDialogProps) {
+  projectId,
+}: RemoveMemberDialogProps) {
   const dispatch = useDispatch<AppDispatch>();
-  // console.log("vcl", userId);
 
   return (
     <>
@@ -50,8 +55,8 @@ export default function DeleteDialog({
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete this user? This action can not be
-            undone.
+            Are you sure you want to remove this user in project? This action
+            can not be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ margin: "12px 20px", gap: "4px" }}>
@@ -86,18 +91,21 @@ export default function DeleteDialog({
             }}
             onClick={async () => {
               onClose();
-              console.log("in", userId);
+              console.log("in", userId, projectId);
 
-              const result = await dispatch(deleteUser(userId));
+              const result = await dispatch(
+                removeMember({ userId, projectId })
+              );
               console.log("kkk", result);
 
               if (result.code !== 1000) {
                 toast.error(result.message);
               } else toast.success(result.message);
-              await dispatch(getAllUser());
+              onClose();
+              await dispatch(getAllProject());
             }}
           >
-            Delete
+            Remove
           </Button>
         </DialogActions>
       </Dialog>
