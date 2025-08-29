@@ -31,7 +31,6 @@ interface AddMemberDialogProps {
   handleClose: () => void;
   users: User[];
   projectId: string;
-  handleAddMembers: (members: User[]) => void;
 }
 
 const AddTaskDialog: React.FC<AddMemberDialogProps> = ({
@@ -39,7 +38,7 @@ const AddTaskDialog: React.FC<AddMemberDialogProps> = ({
   handleClose,
   users,
   projectId,
-  handleAddMembers,
+  // handleAddMembers,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -69,7 +68,7 @@ const AddTaskDialog: React.FC<AddMemberDialogProps> = ({
     const selectedMembers = users.filter((user) =>
       selectedUserIds.includes(user.userId)
     );
-    handleAddMembers(selectedMembers);
+    // handleAddMembers(selectedMembers);
 
     console.log("in ra users", selectedUserIds);
 
