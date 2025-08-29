@@ -476,7 +476,7 @@ export default function ProjectDetailsDrawer({
                 },
                 mb: 2,
               }}
-              onClick={handleClickAdd}
+              onClick={handleClickAddTask}
             >
               <AddIcon sx={{ marginLeft: "-7px" }} />
               Add task
@@ -546,8 +546,8 @@ export default function ProjectDetailsDrawer({
 
           <AddTaskDialog
             open={openAddTask}
-            handleClose={handleCloseTask}
-            users={allUsers}
+            onClose={handleCloseTask}
+            members={project.members}
             projectId={project.id}
           />
         </Box>

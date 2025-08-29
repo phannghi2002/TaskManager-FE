@@ -1,4 +1,6 @@
 import {
+  Box,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -9,6 +11,9 @@ import {
 } from "@mui/material";
 
 import { format } from "date-fns";
+
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import type { Task } from "../interface/Task";
 import StatusChip from "../../styles/StatusStyle";
@@ -23,11 +28,12 @@ export const TaskTable = ({ tasks }: TaskTableProps) => {
       <Table size="small">
         <TableHead>
           <TableRow sx={{ backgroundColor: "#E1E6E9" }}>
-            <TableCell>Title</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Assignee</TableCell>
-            <TableCell>Deadline</TableCell>
+            <TableCell sx={{ width: "10%" }}>Title</TableCell>
+            <TableCell sx={{ width: "30%" }}>Description</TableCell>
+            <TableCell sx={{ width: "10%" }}>Status</TableCell>
+            <TableCell sx={{ width: "20%" }}>AssigneeId</TableCell>
+            <TableCell sx={{ width: "20%" }}>Deadline</TableCell>
+            <TableCell sx={{ width: "20%" }}>Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -43,11 +49,30 @@ export const TaskTable = ({ tasks }: TaskTableProps) => {
                 <TableCell>
                   {format(new Date(task.deadline), "dd/MM/yyyy")}
                 </TableCell>
+                <TableCell>
+                  <Box
+                    sx={{ display: "flex", gap: 1, justifyContent: "center" }}
+                  >
+                    <IconButton size="small" aria-label="edit">
+                      <EditIcon
+                        fontSize="small"
+                        // onClick={() => handleEdit(task)}
+                      />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      aria-label="delete"
+                      // onClick={() => handleDelete(task.id)}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={5} align="center">
+              <TableCell colSpan={6} align="center">
                 Chưa có nhiệm vụ nào được giao
               </TableCell>
             </TableRow>

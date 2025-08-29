@@ -5,6 +5,9 @@ import {
   ADD_MEMBER_IN_PROJECT_FAILURE,
   ADD_MEMBER_IN_PROJECT_REQUEST,
   ADD_MEMBER_IN_PROJECT_SUCCESS,
+  ADD_TASK_FAILURE,
+  ADD_TASK_REQUEST,
+  ADD_TASK_SUCCESS,
   CLEAR_MESSEAGE,
   CREATE_PROJECT_FAILURE,
   CREATE_PROJECT_REQUEST,
@@ -51,6 +54,18 @@ interface AddMembers {
   projectId: string;
   userIds: string[];
 }
+
+interface AddTask {
+  projectId: string;
+  body: {
+    title: string;
+    description: string;
+    assigneeId: string;
+    startDate: Dayjs | null;
+    endDate: Dayjs | null;
+  };
+}
+
 export const getAllProject = () => async (dispatch: Dispatch) => {
   dispatch({ type: GET_ALL_PROJECT_REQUEST });
   try {
@@ -189,6 +204,31 @@ export const addMember = (data: AddMembers) => async (dispatch: Dispatch) => {
 
     dispatch({
       type: ADD_MEMBER_IN_PROJECT_FAILURE,
+      payload: error.response.data.message,
+    });
+
+    return error.response.data;
+  }
+};
+
+export const addTask = (data: AddTask) => async (dispatch: Dispatch) => {
+  dispatch({ type: ADD_TASK_REQUEST });
+  try {
+    const response = await api.post(
+      `${API_BASE_URL}/project/${data.projectId}/tasks`,
+      data.body
+    );
+
+    console.log("heheh", response);
+
+    dispatch({ type: ADD_TASK_SUCCESS });
+
+    return response.data;
+  } catch (error: any) {
+    console.log("err", error, error.response.data.message);
+
+    dispatch({
+      type: ADD_TASK_FAILURE,
       payload: error.response.data.message,
     });
 
