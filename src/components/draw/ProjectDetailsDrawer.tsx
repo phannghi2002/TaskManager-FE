@@ -123,6 +123,8 @@ export default function ProjectDetailsDrawer({
     name: project.name,
   });
 
+  console.log("formValue", formValue);
+
   const handleUpdate = async () => {
     const changedFields: {
       description?: string;
@@ -482,7 +484,11 @@ export default function ProjectDetailsDrawer({
               Add task
             </Button>
           )}
-          <TaskTable tasks={project.tasks} projectId={project.id} />
+          <TaskTable
+            tasks={project.tasks}
+            projectId={project.id}
+            members={project.members}
+          />
 
           {edit && (
             <Box

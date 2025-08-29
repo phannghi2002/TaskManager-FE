@@ -27,6 +27,8 @@ import {
   UPDATE_PROJECT_FAILURE,
   UPDATE_PROJECT_REQUEST,
   UPDATE_PROJECT_SUCCESS,
+  UPDATE_TASK_FAILURE,
+  UPDATE_TASK_REQUEST,
 } from "./projectActionTypes";
 import type { Dayjs } from "dayjs";
 
@@ -44,6 +46,18 @@ interface UpdateProject {
     description?: string;
     startDate?: Dayjs | null;
     endDate?: Dayjs | null;
+    status?: string;
+  };
+}
+
+interface TaskUpdateData {
+  projectId: string;
+  taskId: string;
+  body: {
+    title?: string;
+    description?: string;
+    endDate?: Dayjs | null;
+    assigneeId?: string;
     status?: string;
   };
 }
@@ -267,3 +281,29 @@ export const deleteTask = (data: DeleteTask) => async (dispatch: Dispatch) => {
     return error.response.data;
   }
 };
+
+export const updateTask =
+  (data: TaskUpdateData) => async (dispatch: Dispatch) => {
+    dispatch({ type: UPDATE_TASK_REQUEST });
+    try {
+      const response = await api.put(
+        `${API_BASE_URL}/project/${data.projectId}/task/${data.taskId}`,
+        data.body
+      );
+
+      console.log("heheh", response);
+
+      dispatch({ type: UPDATE_TASK_REQUEST });
+
+      return response.data;
+    } catch (error: any) {
+      console.log("err", error, error.response.data.message);
+
+      dispatch({
+        type: UPDATE_TASK_FAILURE,
+        payload: error.response.data.message,
+      });
+
+      return error.response.data;
+    }
+  };

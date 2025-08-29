@@ -130,11 +130,6 @@ export default function UserTab({ user, edit, onClose }: UserProps) {
 
     console.log("Data to send to API:", requestData);
 
-    // Bây giờ updatedFields là một đối tượng hoàn chỉnh, có thể gửi đi
-
-    // Gửi updatedFields tới backend
-    // ...
-
     await dispatch(updateUser(requestData));
     onClose();
     await dispatch(getAllUser());
@@ -235,7 +230,6 @@ export default function UserTab({ user, edit, onClose }: UserProps) {
         <UserDetailRow label="User ID" value={user.userId} />
         <UserDetailRow
           label="Email"
-          // value={user.email}
           value={formValue.email}
           edit={edit}
           onChange={(e) => {

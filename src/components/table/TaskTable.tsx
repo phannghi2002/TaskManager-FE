@@ -19,24 +19,46 @@ import type { Task } from "../interface/Task";
 import StatusChip from "../../styles/StatusStyle";
 import RemoveTaskDialog from "../dialog/RemoveTaskDialog";
 import { useState } from "react";
+import EditTaskDialog from "../dialog/EditTaskDialog";
+import type { Member } from "../interface/Member";
 
 interface TaskTableProps {
   tasks: Task[];
   projectId: string;
+  members: Member[];
 }
 
-export const TaskTable = ({ tasks, projectId }: TaskTableProps) => {
+export const TaskTable = ({ tasks, projectId, members }: TaskTableProps) => {
   const [open, setOpen] = useState(false);
-  const [selectTask, setSelectTask] = useState("");
+  const [update, setUpdate] = useState(false);
+  const [selectTask, setSelectTask] = useState<Task>({
+    id: "",
+    title: "",
+    description: "",
+    status: "",
+    assigneeId: "",
+    deadline: "",
+  });
 
-  const handleDelete = (id: string) => {
+  // console.log("members", members);
+
+  const handleDelete = (task: Task) => {
     setOpen(true);
-    console.log("id", id);
-    setSelectTask(id);
+    console.log("task", task);
+    setSelectTask(task);
   };
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleUpdate = (task: Task) => {
+    setUpdate(true);
+    setSelectTask(task);
+  };
+
+  const handleCloseUpdate = () => {
+    setUpdate(false);
   };
   return (
     <>
@@ -62,9 +84,7 @@ export const TaskTable = ({ tasks, projectId }: TaskTableProps) => {
                     <StatusChip status={task.status as any} />
                   </TableCell>
                   <TableCell>{task.assigneeId}</TableCell>
-                  <TableCell>
-                    {format(new Date(task.deadline), "dd/MM/yyyy")}
-                  </TableCell>
+                  <TableCell>{format(task.deadline, "dd/MM/yyyy")}</TableCell>
                   <TableCell>
                     <Box
                       sx={{ display: "flex", gap: 1, justifyContent: "center" }}
@@ -72,13 +92,13 @@ export const TaskTable = ({ tasks, projectId }: TaskTableProps) => {
                       <IconButton size="small" aria-label="edit">
                         <EditIcon
                           fontSize="small"
-                          // onClick={() => handleEdit(task)}
+                          onClick={() => handleUpdate(task)}
                         />
                       </IconButton>
                       <IconButton
                         size="small"
                         aria-label="delete"
-                        onClick={() => handleDelete(task.id)}
+                        onClick={() => handleDelete(task)}
                       >
                         <DeleteIcon fontSize="small" />
                       </IconButton>
@@ -100,7 +120,15 @@ export const TaskTable = ({ tasks, projectId }: TaskTableProps) => {
       <RemoveTaskDialog
         open={open}
         onClose={handleClose}
-        taskId={selectTask}
+        taskId={selectTask?.id}
+        projectId={projectId}
+      />
+
+      <EditTaskDialog
+        open={update}
+        onClose={handleCloseUpdate}
+        task={selectTask}
+        members={members}
         projectId={projectId}
       />
     </>

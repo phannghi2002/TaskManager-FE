@@ -18,8 +18,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import DeleteProjectDialog from "../dialog/DeleteProjectDialog";
 
 export default function ProjectCard({ card }: { card: Project }) {
-  console.log("dfajdfh", card);
-
   const [open, setOpen] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openDrawerEdit, setOpenDrawerEdit] = useState(false);

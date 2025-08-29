@@ -8,12 +8,11 @@ import {
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../app/store";
-import { deleteUser, getAllUser } from "../../actions/user/userActions";
+
 import { toast } from "react-toastify";
 import {
   deleteTask,
   getAllProject,
-  removeMember,
 } from "../../actions/project/projectActions";
 
 interface RemoveTaskDialogProps {

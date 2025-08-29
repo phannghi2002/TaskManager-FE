@@ -6,11 +6,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
 } from "@mui/material";
 import type { Dayjs } from "dayjs";
@@ -20,9 +15,9 @@ import type { AppDispatch } from "../../app/store";
 import { clearMessage } from "../../actions/auth/authActions";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import RoleChip from "../../styles/RoleStyle";
+
 import { toast } from "react-toastify";
-import { createUser, getAllUser } from "../../actions/user/userActions";
+
 import { useSelector } from "react-redux";
 import {
   createProject,
