@@ -5,7 +5,7 @@ import {
   CLEAR_MESSEAGE,
   REGISTER_REQUEST,
   REGISTER_FAILURE,
-  REGISTER_SUCCESS,
+  CHANGE_PASSWORD_FAILURE,
 } from "../../actions/auth/authActionTypes";
 
 interface AuthState {
@@ -33,6 +33,7 @@ const authReducer = (state = initialState, action: any): AuthState => {
 
     case REGISTER_FAILURE:
     case LOGIN_FAILURE:
+    case CHANGE_PASSWORD_FAILURE:
       return { ...state, loading: false, error: action.payload };
     case CLEAR_MESSEAGE:
       return { ...state, loading: false, error: null };

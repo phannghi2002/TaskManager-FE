@@ -1,4 +1,5 @@
-import { Chip, type SxProps, type Theme } from "@mui/material";
+import { Chip } from "@mui/material";
+import { capitalizeStatus } from "../utils/convertToStatus";
 
 interface StatusStyle {
   backgroundColor: string;
@@ -38,24 +39,24 @@ interface StatusChipProps {
   status: ProjectStatus;
 }
 
-// 4. Component chính
 const StatusChip = ({ status }: StatusChipProps) => {
-  // Lấy style tương ứng, nếu không có thì mặc định là Member (hoặc một style default)
-  const style = statusStyles[status] || statusStyles.Planning;
+  let statusNew = capitalizeStatus(status);
 
+  let style = statusStyles.Planning;
+
+  if (statusNew in statusStyles) {
+    style = statusStyles[statusNew as ProjectStatus];
+  }
   return (
     <Chip
-      label={status}
+      label={statusNew}
       size="small"
-      sx={
-        {
-          ...style, // Áp dụng backgroundColor và color
-          fontWeight: "600",
-          borderRadius: "6px",
-          // Tùy chỉnh thêm padding nếu cần để chip to hơn
-          px: "4px",
-        } as SxProps<Theme>
-      } // Ép kiểu SxProps để TypeScript không báo lỗi khi dùng spread operator
+      sx={{
+        ...style, // Áp dụng backgroundColor và color
+        fontWeight: "600",
+        borderRadius: "6px",
+        px: "4px",
+      }}
     />
   );
 };

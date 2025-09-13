@@ -5,9 +5,6 @@ interface StatusStyle {
   color: string;
 }
 
-// 2. Định nghĩa mapping các Role (sử dụng Record để an toàn kiểu)
-// Nếu bạn đã có kiểu UserRole ở file khác, hãy import nó vào.
-
 export type TaskStatus = "To_do" | "In_progress" | "Done";
 
 const statusStyles: Record<TaskStatus, StatusStyle> = {

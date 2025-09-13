@@ -27,6 +27,7 @@ import type { AppDispatch } from "../../app/store";
 import AddIcon from "@mui/icons-material/Add";
 import {
   getAllProject,
+  showMemberNotInProject,
   updateProject,
 } from "../../actions/project/projectActions";
 import { useSelector } from "react-redux";
@@ -50,7 +51,7 @@ const STATUS_OPTIONS: ProjectStatus[] = [
 interface ProjectDetailsDrawerProps {
   open: boolean;
   onClose: () => void;
-  project: Project; // Use a more specific type if possible
+  projectProp: Project; // Use a more specific type if possible
   edit?: boolean;
 }
 
@@ -71,14 +72,14 @@ export interface User {
 export default function ProjectDetailsDrawer({
   open,
   onClose,
-  project,
+  projectProp,
   edit = false,
 }: ProjectDetailsDrawerProps) {
-  if (!project) {
+  if (!projectProp) {
     return null;
   }
 
-  const { user } = useSelector((store: any) => store);
+  const { user, project } = useSelector((store: any) => store);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -88,7 +89,11 @@ export default function ProjectDetailsDrawer({
     }
   }, []);
 
-  const allUsers: User[] = user.users;
+  const notMember: [] = project.memberNotProject;
+
+  // console.log("hhhhh", projectProp.members);
+
+  const listIds = projectProp.members.map((item) => item.id);
 
   const handleAddMembers = (selectedMembers: User[]) => {
     console.log("Các thành viên đã được chọn:", selectedMembers);
@@ -97,8 +102,9 @@ export default function ProjectDetailsDrawer({
 
   const [openAdd, setOpenAdd] = useState(false);
 
-  const handleClickAdd = () => {
+  const handleClickAdd = async () => {
     setOpenAdd(true);
+    await dispatch(showMemberNotInProject(listIds));
   };
 
   const handleClose = () => {
@@ -116,11 +122,11 @@ export default function ProjectDetailsDrawer({
   };
 
   const [formValue, setFormValue] = React.useState<ProjectFormValue>({
-    description: project.description,
-    endDate: project.endDate ? dayjs(project.endDate) : null,
-    startDate: project.startDate ? dayjs(project.startDate) : null,
-    status: project.status,
-    name: project.name,
+    description: projectProp.description,
+    endDate: projectProp.endDate ? dayjs(projectProp.endDate) : null,
+    startDate: projectProp.startDate ? dayjs(projectProp.startDate) : null,
+    status: projectProp.status,
+    name: projectProp.name,
   });
 
   console.log("formValue", formValue);
@@ -134,31 +140,31 @@ export default function ProjectDetailsDrawer({
       status?: string;
     } = {};
 
-    if (formValue.description !== project.description) {
+    if (formValue.description !== projectProp.description) {
       changedFields.description = formValue.description;
     }
-    if (formValue.name !== project.name) {
+    if (formValue.name !== projectProp.name) {
       changedFields.name = formValue.name;
     }
 
-    if (!dayjs(formValue.endDate).isSame(dayjs(project.endDate))) {
+    if (!dayjs(formValue.endDate).isSame(dayjs(projectProp.endDate))) {
       changedFields.endDate = formValue.endDate
         ? dayjs(formValue.endDate)
         : null;
     }
 
-    if (!dayjs(formValue.startDate).isSame(dayjs(project.startDate))) {
+    if (!dayjs(formValue.startDate).isSame(dayjs(projectProp.startDate))) {
       changedFields.startDate = formValue.startDate
         ? dayjs(formValue.startDate)
         : null;
     }
 
-    if (formValue.status !== project.status) {
+    if (formValue.status !== projectProp.status) {
       changedFields.status = formValue.status.toUpperCase();
     }
 
     const requestData = {
-      projectId: project.id,
+      projectId: projectProp.id,
       body: changedFields,
     };
 
@@ -224,7 +230,7 @@ export default function ProjectDetailsDrawer({
     return (
       <UserDetailRow
         label="Status"
-        value={<StatusChip status={project.status as ProjectStatus} />}
+        value={<StatusChip status={projectProp.status as ProjectStatus} />}
         isComponent={true}
       />
     );
@@ -252,7 +258,7 @@ export default function ProjectDetailsDrawer({
           }}
         >
           <Typography variant="h6" sx={{ fontWeight: "600" }}>
-            {project.name}
+            {projectProp.name}
           </Typography>
           <IconButton onClick={onClose}>
             <CloseIcon />
@@ -260,7 +266,7 @@ export default function ProjectDetailsDrawer({
         </Box>
 
         <Box sx={{ p: 2 }}>
-          <UserDetailRow label="Project ID" value={project.id} />
+          <UserDetailRow label="Project ID" value={projectProp.id} />
           <UserDetailRow
             label="Name"
             value={formValue.name}
@@ -421,7 +427,7 @@ export default function ProjectDetailsDrawer({
             />
           )}
 
-          <UserDetailRow label="Create By" value={project.createBy} />
+          <UserDetailRow label="Create By" value={projectProp.createBy} />
 
           {renderStatusField()}
 
@@ -454,7 +460,10 @@ export default function ProjectDetailsDrawer({
             </Button>
           )}
 
-          <MemberTable members={project.members} projectId={project.id} />
+          <MemberTable
+            members={projectProp.members}
+            projectId={projectProp.id}
+          />
 
           <Typography variant="h6" sx={{ mt: 3, mb: 1, fontWeight: "600" }}>
             Tasks
@@ -485,9 +494,9 @@ export default function ProjectDetailsDrawer({
             </Button>
           )}
           <TaskTable
-            tasks={project.tasks}
-            projectId={project.id}
-            members={project.members}
+            tasks={projectProp.tasks}
+            projectId={projectProp.id}
+            members={projectProp.members}
           />
 
           {edit && (
@@ -541,21 +550,23 @@ export default function ProjectDetailsDrawer({
               </Button>
             </Box>
           )}
-
-          <AddMemberDialog
-            open={openAdd}
-            handleClose={handleClose}
-            users={allUsers}
-            projectId={project.id}
-            handleAddMembers={handleAddMembers}
-          />
-
-          <AddTaskDialog
-            open={openAddTask}
-            onClose={handleCloseTask}
-            members={project.members}
-            projectId={project.id}
-          />
+          {openAdd && (
+            <AddMemberDialog
+              open={openAdd}
+              handleClose={handleClose}
+              users={notMember}
+              projectId={projectProp.id}
+              handleAddMembers={handleAddMembers}
+            />
+          )}
+          {openAddTask && (
+            <AddTaskDialog
+              open={openAddTask}
+              onClose={handleCloseTask}
+              members={projectProp.members}
+              projectId={projectProp.id}
+            />
+          )}
         </Box>
       </Box>
     </Drawer>

@@ -24,6 +24,9 @@ import UserManagerPage from "./components/pages/UserManagerPage/UserManagerPage"
 import NotFoundPage from "./components/pages/NotFoundPage/NotFoundPage";
 import UnauthorizedPage from "./components/pages/UnauthorizedPage/UnauthorizedPage";
 import ProjectPage from "./components/pages/ProjectPage/ProjectPage";
+import TaskPage from "./components/pages/TaskPage/TaskPage";
+import RoleBasedAccessWrapper from "./components/router/RoleBasedAccessWrapper";
+import ChatRoomPage from "./components/pages/ChatRoomPage/ChatRoomPage";
 
 interface PrivateRouteWrapperProps {
   isAuthenticated: boolean;
@@ -63,9 +66,40 @@ function App() {
               }
             >
               <Route element={<DashboardLayout />}>
-                <Route path="/overview" element={<OverviewPage />} />
+                {/* <Route path="/overview" element={<OverviewPage />} />
                 <Route path="/users" element={<UserManagerPage />} />
                 <Route path="/project" element={<ProjectPage />} />
+                <Route path="/task" element={<TaskPage />} /> */}
+
+                <Route
+                  element={
+                    <RoleBasedAccessWrapper
+                      allowedRoles={["MANAGER", "LEADER", "EMPLOYEE"]}
+                    />
+                  }
+                >
+                  <Route path="/overview" element={<OverviewPage />} />
+                  <Route path="/task" element={<TaskPage />} />
+                  <Route path="/chat" element={<ChatRoomPage />} />
+                </Route>
+
+                <Route
+                  element={
+                    <RoleBasedAccessWrapper
+                      allowedRoles={["MANAGER", "LEADER"]}
+                    />
+                  }
+                >
+                  <Route path="/project" element={<ProjectPage />} />
+                </Route>
+
+                <Route
+                  element={
+                    <RoleBasedAccessWrapper allowedRoles={["MANAGER"]} />
+                  }
+                >
+                  <Route path="/users" element={<UserManagerPage />} />
+                </Route>
               </Route>
             </Route>
 

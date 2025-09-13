@@ -8,11 +8,13 @@ import { thunk, type ThunkDispatch } from "redux-thunk";
 import authReducer from "../reducers/auth/authReducer";
 import userReducer from "../reducers/user/userReducer";
 import projectReducer from "../reducers/project/projectReducer";
+import chatReducer from "../reducers/chat/chatReducer";
 
 const rootReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
   project: projectReducer,
+  chat: chatReducer,
 });
 
 // export const store = legacy_createStore(rootReducer, applyMiddleware(thunk));

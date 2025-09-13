@@ -1,24 +1,90 @@
-import * as React from "react";
 import {
+  Avatar,
   Box,
   Drawer,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import TaskIcon from "@mui/icons-material/Task";
-import { Outlet, Link as RouterLink, useLocation } from "react-router-dom"; // Import useLocation hook
+import AssistantIcon from "@mui/icons-material/Assistant";
+import {
+  Outlet,
+  Link as RouterLink,
+  useLocation,
+  useNavigate,
+} from "react-router-dom"; // Import useLocation hook
 import logo from "../../assets/images/starack_logo.jpg"; // Change this to your logo path
+
+import SearchIcon from "@mui/icons-material/Search";
+import ChatIcon from "@mui/icons-material/Chat";
+import { deepOrange } from "@mui/material/colors";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../app/store";
+import { logout } from "../../actions/auth/authActions";
+import React, { useState } from "react";
+import ChangePasswordDialog from "../dialog/ChangePasswordDialog";
+
+interface LogoutData {
+  token: string;
+  refreshToken: string;
+}
 
 const drawerWidth = 240;
 
 const DashboardLayout: React.FC = () => {
+  const role: string | null = localStorage.getItem("role");
   const location = useLocation(); // Get current path
 
+  const dispatch = useDispatch<AppDispatch>();
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const token = localStorage.getItem("jwt");
+  const refreshToken = localStorage.getItem("refreshToken");
+  const navigate = useNavigate();
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleLogout = async () => {
+    console.log("hhaf", token, refreshToken);
+
+    if (token && refreshToken) {
+      console.log("hhh");
+
+      const logoutData: LogoutData = {
+        token: token,
+        refreshToken: refreshToken,
+      };
+
+      await dispatch(logout(logoutData));
+
+      navigate("/login");
+    }
+  };
+
+  const [openChangePassword, setOpenChangePassword] = useState(false);
+
+  const closeChangePassword = () => {
+    setOpenChangePassword(false);
+  };
+  const handleChangePassword = () => {
+    setOpenChangePassword(true);
+    handleClose();
+  };
   return (
     <Box
       sx={{
@@ -137,50 +203,94 @@ const DashboardLayout: React.FC = () => {
               </ListItemButton>
             </ListItem>
 
-            <ListItem disablePadding>
-              <ListItemButton
-                component={RouterLink}
-                to="/users"
-                sx={{
-                  "&.Mui-selected": {
-                    backgroundColor: "#0F8EEF",
-                    borderRadius: "12px",
-                    color: "#fff",
-                    height: "36px",
-                    "&:hover": { backgroundColor: "#0C80D8" },
-
-                    // Icon color inherited here
-                    "& .MuiListItemIcon-root": {
-                      color: "inherit",
-                    },
-                  },
-                }}
-                selected={location.pathname === "/users"}
-              >
-                <ListItemIcon
+            {role === "MANAGER" && (
+              <ListItem disablePadding>
+                <ListItemButton
+                  component={RouterLink}
+                  to="/users"
                   sx={{
-                    color: "#C6B3B3",
-                    marginRight: "-24px",
-                    marginLeft: "-4px",
+                    "&.Mui-selected": {
+                      backgroundColor: "#0F8EEF",
+                      borderRadius: "12px",
+                      color: "#fff",
+                      height: "36px",
+                      "&:hover": { backgroundColor: "#0C80D8" },
+
+                      // Icon color inherited here
+                      "& .MuiListItemIcon-root": {
+                        color: "inherit",
+                      },
+                    },
                   }}
+                  selected={location.pathname === "/users"}
                 >
-                  <GroupAddIcon />
-                </ListItemIcon>
-                <ListItemText
+                  <ListItemIcon
+                    sx={{
+                      color: "#C6B3B3",
+                      marginRight: "-24px",
+                      marginLeft: "-4px",
+                    }}
+                  >
+                    <GroupAddIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    sx={{
+                      "& .MuiTypography-root": {
+                        fontSize: "14px",
+                      },
+                    }}
+                    primary="User management"
+                  />
+                </ListItemButton>
+              </ListItem>
+            )}
+
+            {role !== "EMPLOYEE" && (
+              <ListItem disablePadding>
+                <ListItemButton
+                  component={RouterLink}
+                  to="/project"
                   sx={{
-                    "& .MuiTypography-root": {
-                      fontSize: "14px",
+                    "&.Mui-selected": {
+                      backgroundColor: "#0F8EEF",
+                      borderRadius: "12px",
+                      color: "#fff",
+                      height: "36px",
+                      "&:hover": { backgroundColor: "#0C80D8" },
+
+                      // Icon color inherited here
+                      "& .MuiListItemIcon-root": {
+                        color: "inherit",
+                      },
                     },
                   }}
-                  primary="User management"
-                />
-              </ListItemButton>
-            </ListItem>
+                  selected={location.pathname === "/project"}
+                >
+                  <ListItemIcon
+                    sx={{
+                      color: "#C6B3B3",
+                      marginRight: "-24px",
+                      marginLeft: "-4px",
+                    }}
+                  >
+                    <AssistantIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    sx={{
+                      "& .MuiTypography-root": {
+                        fontSize: "14px",
+                      },
+                    }}
+                    primary="Project"
+                  />
+                </ListItemButton>
+              </ListItem>
+            )}
 
             <ListItem disablePadding>
               <ListItemButton
                 component={RouterLink}
-                to="/project"
+                to="/task"
                 sx={{
                   "&.Mui-selected": {
                     backgroundColor: "#0F8EEF",
@@ -195,7 +305,7 @@ const DashboardLayout: React.FC = () => {
                     },
                   },
                 }}
-                selected={location.pathname === "/project"}
+                selected={location.pathname === "/task"}
               >
                 <ListItemIcon
                   sx={{
@@ -212,7 +322,47 @@ const DashboardLayout: React.FC = () => {
                       fontSize: "14px",
                     },
                   }}
-                  primary="Project"
+                  primary="Task"
+                />
+              </ListItemButton>
+            </ListItem>
+
+            <ListItem disablePadding>
+              <ListItemButton
+                component={RouterLink}
+                to="/chat"
+                sx={{
+                  "&.Mui-selected": {
+                    backgroundColor: "#0F8EEF",
+                    borderRadius: "12px",
+                    color: "#fff",
+                    height: "36px",
+                    "&:hover": { backgroundColor: "#0C80D8" },
+
+                    // Icon color inherited here
+                    "& .MuiListItemIcon-root": {
+                      color: "inherit",
+                    },
+                  },
+                }}
+                selected={location.pathname === "/chat"}
+              >
+                <ListItemIcon
+                  sx={{
+                    color: "#C6B3B3",
+                    marginRight: "-24px",
+                    marginLeft: "-4px",
+                  }}
+                >
+                  <ChatIcon />
+                </ListItemIcon>
+                <ListItemText
+                  sx={{
+                    "& .MuiTypography-root": {
+                      fontSize: "14px",
+                    },
+                  }}
+                  primary="Chat"
                 />
               </ListItemButton>
             </ListItem>
@@ -229,6 +379,76 @@ const DashboardLayout: React.FC = () => {
           overflow: "auto",
         }}
       >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            margin: "12px 20px",
+          }}
+        >
+          <SearchIcon
+            sx={{
+              "&:hover": {
+                cursor: "pointer",
+              },
+            }}
+          />
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyItems: "center",
+              alignItems: "center",
+            }}
+          >
+            <Avatar
+              sx={{
+                bgcolor: deepOrange[500],
+                fontSize: "16px",
+                width: "30px",
+                height: "30px",
+                marginLeft: "8px",
+              }}
+            >
+              N
+            </Avatar>
+
+            <IconButton onClick={handleClick}>
+              <ExpandMoreIcon
+                sx={{
+                  display: "flex",
+                  "&:hover": {
+                    cursor: "pointer",
+                  },
+                }}
+              />
+            </IconButton>
+
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              slotProps={{
+                list: {
+                  "aria-labelledby": "basic-button",
+                },
+              }}
+            >
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              <MenuItem onClick={handleChangePassword}>
+                Change Password
+              </MenuItem>
+            </Menu>
+          </Box>
+        </Box>
+
+        {openChangePassword && (
+          <ChangePasswordDialog
+            open={openChangePassword}
+            onClose={closeChangePassword}
+          />
+        )}
         <Outlet />
       </Box>
     </Box>

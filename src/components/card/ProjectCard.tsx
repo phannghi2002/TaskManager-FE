@@ -11,13 +11,20 @@ import { format } from "date-fns";
 
 import { useState } from "react";
 import ProjectDetailsDrawer from "../draw/ProjectDetailsDrawer";
-import { Box } from "@mui/material";
+import { Box, Menu, MenuItem } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DeleteProjectDialog from "../dialog/DeleteProjectDialog";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../app/store";
+import { createChat } from "../../actions/chat/chatActions";
+import { toast } from "react-toastify";
 
 export default function ProjectCard({ card }: { card: Project }) {
+  const dispatch = useDispatch<AppDispatch>();
+
   const [open, setOpen] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openDrawerEdit, setOpenDrawerEdit] = useState(false);
@@ -46,6 +53,36 @@ export default function ProjectCard({ card }: { card: Project }) {
     setOpenDrawerEdit(false);
   };
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedProject, setSelectedProject] = useState<string>("");
+  const openMenu = Boolean(anchorEl);
+
+  const handleMenuClick = (
+    event: React.MouseEvent<HTMLElement>,
+    projectId: string
+  ) => {
+    console.log("la nhi", projectId);
+
+    setAnchorEl(event.currentTarget);
+    setSelectedProject(projectId);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleCreateGroupChat = async () => {
+    console.log("project ne", selectedProject);
+
+    const result = await dispatch(createChat({ projectId: selectedProject }));
+    if (result.code === 1000) {
+      toast.success("Create group project chat successfully");
+    } else {
+      toast.error(result.message);
+    }
+    handleMenuClose();
+  };
+
   return (
     <>
       <Card
@@ -63,6 +100,14 @@ export default function ProjectCard({ card }: { card: Project }) {
             <Avatar sx={{ bgcolor: "red" }} aria-label="recipe">
               {card.name[0]} {/* lấy chữ cái đầu */}
             </Avatar>
+          }
+          action={
+            <IconButton
+              aria-label="settings"
+              onClick={(event) => handleMenuClick(event, card.id)}
+            >
+              <MoreVertIcon />
+            </IconButton>
           }
           title={card.name}
           subheader={format(card.startDate, "MMMM dd, yyyy")}
@@ -92,24 +137,47 @@ export default function ProjectCard({ card }: { card: Project }) {
           </IconButton>
         </Box>
       </Card>
-      <ProjectDetailsDrawer
-        open={openDrawer}
-        onClose={handleCloseDrawer}
-        project={card}
-      />
 
-      <ProjectDetailsDrawer
-        open={openDrawerEdit}
-        onClose={handleCloseDrawerEdit}
-        project={card}
-        edit={true}
-      />
+      <Menu
+        anchorEl={anchorEl}
+        open={openMenu}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <MenuItem onClick={handleCreateGroupChat}>Create group chat</MenuItem>
+      </Menu>
 
-      <DeleteProjectDialog
-        open={open}
-        onClose={handleClose}
-        projectId={card.id}
-      />
+      {openDrawer && (
+        <ProjectDetailsDrawer
+          open={openDrawer}
+          onClose={handleCloseDrawer}
+          projectProp={card}
+        />
+      )}
+
+      {openDrawerEdit && (
+        <ProjectDetailsDrawer
+          open={openDrawerEdit}
+          onClose={handleCloseDrawerEdit}
+          projectProp={card}
+          edit={true}
+        />
+      )}
+
+      {open && (
+        <DeleteProjectDialog
+          open={open}
+          onClose={handleClose}
+          projectId={card.id}
+        />
+      )}
     </>
   );
 }

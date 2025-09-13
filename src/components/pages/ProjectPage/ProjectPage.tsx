@@ -7,7 +7,7 @@ import type { AppDispatch } from "../../../app/store";
 import { useSelector } from "react-redux";
 import type { Project } from "../../interface/Project";
 import AddIcon from "@mui/icons-material/Add";
-import CreateMemberDialog from "../../dialog/CreateMemberDialog";
+
 import CreateProjectDialog from "../../dialog/CreateProjectDialog";
 
 function ProjectPage() {
@@ -78,7 +78,9 @@ function ProjectPage() {
         ))}
       </Box>
 
-      <CreateProjectDialog open={openAdd} onClose={handleCloseAdd} />
+      {openAdd && (
+        <CreateProjectDialog open={openAdd} onClose={handleCloseAdd} />
+      )}
     </>
   );
 }

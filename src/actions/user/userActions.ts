@@ -10,6 +10,9 @@ import {
   GET_ALL_USER_FAILURE,
   GET_ALL_USER_REQUEST,
   GET_ALL_USER_SUCCESS,
+  GET_PROFILE_MY_SELF_FAILURE,
+  GET_PROFILE_MY_SELF_REQUEST,
+  GET_PROFILE_MY_SELF_SUCCESS,
   SEARCH_USER_FAILURE,
   SEARCH_USER_REQUEST,
   SEARCH_USER_SUCCESS,
@@ -151,6 +154,28 @@ export const searchUser = (keyword: string) => async (dispatch: Dispatch) => {
 
     dispatch({
       type: SEARCH_USER_FAILURE,
+      payload: error.response.data.message,
+    });
+
+    return error.response.data;
+  }
+};
+
+export const getMyProfile = () => async (dispatch: Dispatch) => {
+  dispatch({ type: GET_PROFILE_MY_SELF_REQUEST });
+  try {
+    const response = await api.get(`${API_BASE_URL}/user/get-profile-my-self`);
+    console.log("in rea res", response);
+
+    dispatch({
+      type: GET_PROFILE_MY_SELF_SUCCESS,
+      payload: response.data.result,
+    });
+
+    return response.data;
+  } catch (error: any) {
+    dispatch({
+      type: GET_PROFILE_MY_SELF_FAILURE,
       payload: error.response.data.message,
     });
 

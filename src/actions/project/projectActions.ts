@@ -21,6 +21,12 @@ import {
   GET_ALL_PROJECT_FAILURE,
   GET_ALL_PROJECT_REQUEST,
   GET_ALL_PROJECT_SUCCESS,
+  GET_NOT_MEMBER_IN_PROJECT_FAILURE,
+  GET_NOT_MEMBER_IN_PROJECT_REQUEST,
+  GET_NOT_MEMBER_IN_PROJECT_SUCCESS,
+  GET_TASK_FAILURE,
+  GET_TASK_REQUEST,
+  GET_TASK_SUCCESS,
   REMOVE_MEMBER_IN_PROJECT_FAILURE,
   REMOVE_MEMBER_IN_PROJECT_REQUEST,
   REMOVE_MEMBER_IN_PROJECT_SUCCESS,
@@ -301,6 +307,54 @@ export const updateTask =
 
       dispatch({
         type: UPDATE_TASK_FAILURE,
+        payload: error.response.data.message,
+      });
+
+      return error.response.data;
+    }
+  };
+
+export const getTask = () => async (dispatch: Dispatch) => {
+  dispatch({ type: GET_TASK_REQUEST });
+  try {
+    const response = await api.get(
+      `${API_BASE_URL}/project/projects-with-my-tasks`
+    );
+    console.log("in rea res", response);
+
+    dispatch({ type: GET_TASK_SUCCESS, payload: response.data.result });
+
+    return response.data;
+  } catch (error: any) {
+    dispatch({
+      type: GET_TASK_FAILURE,
+      payload: error.response.data.message,
+    });
+
+    return error.response.data;
+  }
+};
+
+export const showMemberNotInProject =
+  (listIds: String[]) => async (dispatch: Dispatch) => {
+    dispatch({ type: GET_NOT_MEMBER_IN_PROJECT_REQUEST });
+    try {
+      const response = await api.post(
+        `${API_BASE_URL}/project/get-not-member-in-project`,
+        { listIds }
+      );
+
+      dispatch({
+        type: GET_NOT_MEMBER_IN_PROJECT_SUCCESS,
+        payload: response.data.result,
+      });
+
+      return response.data;
+    } catch (error: any) {
+      console.log("err", error, error.response.data.message);
+
+      dispatch({
+        type: GET_NOT_MEMBER_IN_PROJECT_FAILURE,
         payload: error.response.data.message,
       });
 
